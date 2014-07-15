@@ -15,10 +15,14 @@ import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
+	TextView tv;
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        tv = (TextView) findViewById(R.id.to_print);
+        tv.setText(" ");
     }
 
 
@@ -30,37 +34,36 @@ public class MainActivity extends Activity {
     }
     
     public void outputVoice(View v) {
-            String toPrint = "Voice recording\n";
+        String toPrint = "Voice recording\n";
 
-            int minSize = AudioRecord.getMinBufferSize(12000,AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT);
-            final AudioRecord ar = new AudioRecord(MediaRecorder.AudioSource.MIC, 12000,AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT,minSize);
+        int minSize = AudioRecord.getMinBufferSize(12000,AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT);
+        final AudioRecord ar = new AudioRecord(MediaRecorder.AudioSource.MIC, 12000,AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT,minSize);
 
 
-            short[] buffer = new short[minSize];
+        short[] buffer = new short[minSize];
 
-            Timer tim = new Timer();
-            TimerTask timT = new TimerTask() {
+        Timer tim = new Timer();
+        TimerTask timT = new TimerTask() {
+			
+			@Override
+			public void run() {
+				ar.stop();
 				
-				@Override
-				public void run() {
-					ar.stop();
-					
-				}
-			};
-            
-            tim.schedule(timT, 1500);
-            ar.startRecording();
-            ar.read(buffer, 0, minSize);
-            for (short s : buffer) 
-            {
-                    short blow_value=(short) Math.abs(s);
-                    toPrint += (blow_value + " ");
+			}
+		};
+        
+        tim.schedule(timT, 1500);
+        ar.startRecording();
+        ar.read(buffer, 0, minSize);
+        for (short s : buffer) {
+            short blow_value=(short) Math.abs(s);
+            toPrint += (blow_value + "  ");
 
-            }
-            
-            TextView tv = (TextView) findViewById(R.id.to_print);
-            tv.setText(toPrint);
-            return;
+        }
+        
+        tv = (TextView) findViewById(R.id.to_print);
+        tv.setText(toPrint);
+        return;
 
 	}
 	public void outputHum(View v) {
