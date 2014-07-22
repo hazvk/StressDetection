@@ -1,5 +1,6 @@
 package com.hari.se4901.testinghardware;
 
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -13,14 +14,15 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.TextView;
 
-public class MainActivity extends Activity {
+public class MainActivity_Voice extends Activity {
 
 	TextView tv;
+	ArrayList<Short> storedVals = new ArrayList<Short>();
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main_voice);
         tv = (TextView) findViewById(R.id.to_print);
         tv.setText(" ");
     }
@@ -35,9 +37,11 @@ public class MainActivity extends Activity {
     
     public void outputVoice(View v) {
         String toPrint = "Voice recording\n";
+        String toPrintSecond = "";
+        int countZero = 0;
 
-        int minSize = AudioRecord.getMinBufferSize(12000,AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT);
-        final AudioRecord ar = new AudioRecord(MediaRecorder.AudioSource.MIC, 12000,AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT,minSize);
+        int minSize = AudioRecord.getMinBufferSize(12000,AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
+        final AudioRecord ar = new AudioRecord(MediaRecorder.AudioSource.MIC, 12000,AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT,minSize);
 
 
         short[] buffer = new short[minSize];
@@ -58,11 +62,20 @@ public class MainActivity extends Activity {
         for (short s : buffer) {
             short blow_value=(short) Math.abs(s);
             toPrint += (blow_value + "  ");
-
+            toPrintSecond += s + "  ";
+            storedVals.add(s);
         }
         
-        tv = (TextView) findViewById(R.id.to_print);
-        tv.setText(toPrint);
+        //tv = (TextView) findViewById(R.id.to_print);
+        
+        for (Short sh : storedVals) {
+        	if (sh == 0) {
+        		countZero++;
+        	}
+        }
+        
+        toPrint = "Number of 0's = " + countZero + "\n\n" + toPrint; 
+        tv.setText(toPrint + "\n\n" + toPrintSecond);
         return;
 
 	}
