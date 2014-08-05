@@ -73,11 +73,9 @@ public class AcceleratorView extends Activity implements SensorEventListener {
             direction[1] = event.values[1] + ", " + yChange;
             if (Math.abs(yChange) > 
             Math.abs(maxChanges.get("y").get(maxChanges.get("y").size()-1))) {
-<<<<<<< HEAD
+
           	  maxChanges.get("y").add(yChange);
-=======
-          	  maxChanges.get("y").add(xChange);
->>>>>>> c4607c4a51aa10f0332ecf4825eda3cec1c67b23
+
             }
             if (Math.abs(yChange) > 2) {
           	  paceCount[1]++;
@@ -88,11 +86,7 @@ public class AcceleratorView extends Activity implements SensorEventListener {
             direction[2] = event.values[2] + ", " + yChange;
             if (Math.abs(zChange) > 
             Math.abs(maxChanges.get("z").get(maxChanges.get("z").size()-1))) {
-<<<<<<< HEAD
           	  maxChanges.get("z").add(zChange);
-=======
-          	  maxChanges.get("z").add(xChange);
->>>>>>> c4607c4a51aa10f0332ecf4825eda3cec1c67b23
             }
             if (Math.abs(zChange) > 2) {
           	  paceCount[2]++;
