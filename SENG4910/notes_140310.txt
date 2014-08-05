@@ -1,0 +1,6 @@
+[FACE DETECTION SHORE FRAMEWORK]
+Küblbeck, C., and Ernst, A. Face detection and tracking
+in video sequences using the modified census
+transformation. Journal of Image Vision Computing. 24,
+6 (2006), 564–572.
+
