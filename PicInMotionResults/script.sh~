@@ -1,8 +1,0 @@
-#must delete relevent data from 1st file to have appropriate 2nd file
-if [ $# -ne 2 ]; then
-#	cat $1\/2log_erased_data.csv | sed 's/\:\s/ /' > $1\/3final.csv 
-	cat $1\/2log_erased_data.csv | sed 's/\:/ /' > $1\/3final.csv 
-	echo "Date Time R G B\n$(cat $1\/3final.csv)" > $1\/3final.csv
-else
-	echo No argument supplied
-fi

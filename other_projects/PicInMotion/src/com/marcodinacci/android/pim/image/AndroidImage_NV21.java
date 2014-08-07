@@ -38,7 +38,7 @@ public class AndroidImage_NV21 extends AbstractAndroidImage {
 				int b = (((int) mData[ij])) & 0xff;*/
 				
 				// Reconstruct 16 bit rgb565 value from two bytes
-				if (ij == size/2) {
+				if (i == height/2) {
 					
 				  int rgb565 = (mData[ij] & 255) | ((mData[ij + 1] & 255) << 8);
 				
@@ -73,6 +73,8 @@ public class AndroidImage_NV21 extends AbstractAndroidImage {
 				}
 			}
 		}
+		
+		Log.v(TAG, "end colours picture with totDifferentPixels = " + totDifferentPixels);
 		
 		if(totDifferentPixels == 0) totDifferentPixels = 1;
 		Log.d(TAG, "Number of different pixels: " + totDifferentPixels + " -> " 
