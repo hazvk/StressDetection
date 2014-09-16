@@ -9,11 +9,11 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-
 import android.widget.TextView;
 
 public class MainActivity_Voice extends Activity {
@@ -68,13 +68,14 @@ public class MainActivity_Voice extends Activity {
 
 
         final short[] buffer = new short[minSize];
+        Log.v("VoiceRecording", "START");
         ar.startRecording();
 
 		th = new Thread(new Runnable() {
 			
 			@Override
 			public void run() {
-				String toPrint = "Voice recording<br/>";
+				String toPrint = "";
 		    	
 				while (th != null && !th.isInterrupted()) {
 					try {
@@ -100,14 +101,21 @@ public class MainActivity_Voice extends Activity {
 						isUnderlined = false;
 					}
 					
-					toPrint += (sum/totalRead) + " ";
+					toPrint += (sum/totalRead);
+					toPrint += " ";
 					
-					final String willBePrinted = new String(toPrint);
+					String temp = new String(toPrint);
+					if (isUnderlined) {
+						temp += "</u>";
+					}
+					final String willBePrinted = new String(temp);
+					
 					runOnUiThread(new Runnable() {
 						
 						@Override
 						public void run() {
-							tv.setText(Html.fromHtml(willBePrinted));
+							tv.setText(Html.fromHtml("Voice Recording<br/>" + willBePrinted));
+							Log.v("VoiceRecording", willBePrinted + "<br/>");
 						}
 					});
 					

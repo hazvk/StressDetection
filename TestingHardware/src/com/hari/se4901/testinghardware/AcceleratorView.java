@@ -13,6 +13,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -45,6 +46,8 @@ public class AcceleratorView extends Activity implements SensorEventListener {
         maxChanges.get("x").add((float) 0);
         maxChanges.get("y").add((float) 0);
         maxChanges.get("z").add((float) 0);
+        
+        Log.v("Accelerometer", "START");
     }
 
     @Override
@@ -140,6 +143,7 @@ public class AcceleratorView extends Activity implements SensorEventListener {
         
         
         textView.setText(builder.toString());
+        Log.v("Accelerometer",builder.toString());
     }
 
     @Override

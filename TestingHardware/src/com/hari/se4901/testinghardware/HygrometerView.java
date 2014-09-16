@@ -7,6 +7,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -35,6 +36,7 @@ public class HygrometerView extends Activity implements SensorEventListener {
 	    mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 	    mHumid = mSensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
 	    mSensorManager.registerListener(this, mHumid, SensorManager.SENSOR_DELAY_NORMAL);
+	    Log.v("Hygrometer", "START");
 	    
 	  }
 
@@ -72,6 +74,7 @@ public class HygrometerView extends Activity implements SensorEventListener {
 		  }
 		  
 		  textView.setText(output);
+		  Log.v("Hygrometer",output);
 		  totalIndex++;
 		
 	  }
