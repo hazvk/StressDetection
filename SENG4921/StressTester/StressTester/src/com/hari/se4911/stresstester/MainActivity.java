@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.hari.se4911.stresstester.recorders.AcceleratorRecorder;
@@ -57,6 +58,7 @@ public class MainActivity extends ActionBarActivity {
 				mSensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY), SensorManager.SENSOR_DELAY_NORMAL);
 		
 		va = new VoiceRecorder();
+		va.startRecord();
 	}
 
 	private void loadData(String data) {
@@ -84,7 +86,7 @@ public class MainActivity extends ActionBarActivity {
 		return super.onOptionsItemSelected(item);
 	}
 	
-	public boolean testStress() {
+	public boolean testStress(View v) {
 		initSensors();
 		Timer tim = new Timer();
 		TimerTask tm = new TimerTask() {
@@ -125,17 +127,21 @@ public class MainActivity extends ActionBarActivity {
 	protected void onResume() {
 	    // Register a listener for the sensor.
 		super.onResume();
-	    mSensorManager.registerListener(mSensorListener, 
-	    		mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
-	    mSensorManager.registerListener(mSensorListener, 
-	    		mSensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY), SensorManager.SENSOR_DELAY_NORMAL);
+		if (mSensorListener != null && mSensorManager != null) {
+		    mSensorManager.registerListener(mSensorListener, 
+		    		mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+		    mSensorManager.registerListener(mSensorListener, 
+		    		mSensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY), SensorManager.SENSOR_DELAY_NORMAL);
+		    va.startRecord();
+		}
 	}
 	
 	@Override
 	protected void onPause() {
 		// Be sure to unregister the sensor when the activity pauses.
 		super.onPause();
-		mSensorManager.unregisterListener(mSensorListener);
+		stopSensors();
+		
 	}
 	  
 }

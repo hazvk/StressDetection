@@ -28,11 +28,9 @@ public class VoiceRecorder extends Activity {
     			AudioFormat.CHANNEL_IN_MONO, 
     			AudioFormat.ENCODING_PCM_16BIT,minSize);
     	storedVals = new ArrayList<Short>();
-    	
-    	recordVoice();
     }
     
-    private void recordVoice() {
+    public void startRecord() {
 
         final short[] buffer = new short[minSize];
         Log.v("VoiceRecording", "START");
