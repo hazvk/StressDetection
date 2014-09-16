@@ -48,6 +48,9 @@ public class MainActivity extends ActionBarActivity {
 	}
 
 	private void initSensors() {
+		ha = new HygrometerRecorder();
+		aa = new AcceleratorRecorder();
+		
 		mSensorManager = (SensorManager) this
 		                .getSystemService(Context.SENSOR_SERVICE);
 		mSensorListener = new StressSensorEventListener(aa, ha);
@@ -88,6 +91,9 @@ public class MainActivity extends ActionBarActivity {
 	
 	public boolean testStress(View v) {
 		initSensors();
+		
+		final TextView res = (TextView) findViewById(R.id.results);
+		
 		Timer tim = new Timer();
 		TimerTask tm = new TimerTask() {
 			
@@ -96,20 +102,29 @@ public class MainActivity extends ActionBarActivity {
 				stopSensors();
 				returnResults();
 				analyze();
+				
+				runOnUiThread(new Runnable() {
+					
+					@Override
+					public void run() {
+						res.setText("done run");
+					}
+				});
 			}
 		};
 		
-		tim.schedule(tm, 0, ONE_MINUTE);
+		tim.schedule(tm,ONE_MINUTE);
 		
-		TextView res = (TextView) findViewById(R.id.results);
 		res.setText("done");
-		return false;
+		return true;
 		
 	}
 	
 	protected void stopSensors() {
-		mSensorManager.unregisterListener(mSensorListener);
-		va.stopRecord();
+		if (mSensorListener != null && mSensorManager != null) {
+			mSensorManager.unregisterListener(mSensorListener);
+			va.stopRecord();
+		}
 	}
 	
 	protected void returnResults() {

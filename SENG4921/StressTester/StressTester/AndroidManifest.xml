@@ -7,6 +7,13 @@
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="21" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-feature
+	    android:name="android.hardware.sensor.accelerometer"
+	    android:required="true" />
+    <uses-feature
+	    android:name="android.hardware.sensor.hygrometer"
+	    android:required="true" /> 
 
     <application
         android:allowBackup="true"

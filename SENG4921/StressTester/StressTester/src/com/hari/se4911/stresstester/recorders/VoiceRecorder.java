@@ -28,11 +28,11 @@ public class VoiceRecorder extends Activity {
     			AudioFormat.CHANNEL_IN_MONO, 
     			AudioFormat.ENCODING_PCM_16BIT,minSize);
     	storedVals = new ArrayList<Short>();
+    	
     }
     
     public void startRecord() {
 
-        final short[] buffer = new short[minSize];
         Log.v("VoiceRecording", "START");
         ar.startRecording();
         
@@ -48,12 +48,23 @@ public class VoiceRecorder extends Activity {
 						e.printStackTrace();
 					}
 					
+					short[] buffer = new short[minSize * 2];
+					
 					int totalRead = ar.read(buffer, 0, minSize);
+					//Log.d("TOTAL_READ", buffer.length + " " + minSize + " " + totalRead);
 					int sum = 0;
 					for (int i = 0; i < totalRead; i++) {
 						sum += buffer[i];
 					}
-					int amplitudeReading = sum/totalRead; 
+					
+					int amplitudeReading;
+					try {
+						amplitudeReading = sum/totalRead;
+					} catch (ArithmeticException ae) {
+						ae.printStackTrace();
+						amplitudeReading = 0;
+					}
+					 
 					
 					/*
 					 * analyser logic
