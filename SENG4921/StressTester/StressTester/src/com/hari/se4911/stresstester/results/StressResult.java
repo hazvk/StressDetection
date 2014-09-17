@@ -5,25 +5,76 @@ import java.util.Map;
 
 public class StressResult {
 
-	private int averageCountTurns = 0;
-	private float avHydro = 0;
-	private int avVoice = 0;
-	private boolean isStressed = false;
+	private float averageCountTurns;
+	private float avHydro;
+	private float avVoice;
+	private boolean isStressed;
+	
+	private Map<String, ArrayList<Float>> accelRes;
+	private ArrayList<float[]> hydroRes;
+	private ArrayList<Short> voiceRes;
 	
 	public StressResult() {
-		//TODO
+		initResults();
 	}
 
 	public StressResult(Map<String, ArrayList<Float>> accelRes,
 			ArrayList<float[]> hydroRes, ArrayList<Short> voiceRes) {
-		// TODO Auto-generated constructor stub
+		this.accelRes = accelRes;
+		this.hydroRes = hydroRes;
+		this.voiceRes = voiceRes;
+		initResults();
 	}
 	
-	public void analyze() {
-		
+	private void initResults() {
+		averageCountTurns = 0;
+		avHydro = 0;
+		avVoice = 0;
+		isStressed = false;
+	}
+	
+	public void analyze() throws NoResultsException {
+		analyzeAccel();
+		analyzeHydro();
+		analyzeVoice();
 	}
 
 	
+	private void analyzeAccel() throws NoResultsException {
+		if (accelRes == null) throw new NoResultsException();
+		else {
+			// TODO Auto-generated method stub			
+		}
+		
+	}
+
+	private void analyzeHydro() throws NoResultsException {
+		if (hydroRes == null) throw new NoResultsException();
+		else {
+			// TODO Auto-generated method stub			
+		}
+		
+	}
+
+	private void analyzeVoice() throws NoResultsException {
+		if (voiceRes == null) throw new NoResultsException();
+		else {
+			int countShout = 0;
+			int total = voiceRes.size();
+			for (Short v: voiceRes) {
+				if (Math.abs(v) >= 100) {
+					countShout++;
+				}
+			}
+			avVoice = (float) (countShout/total);
+		}
+		
+	}
+	
+	/*
+	 * *********************GETTERS AND SETTERS**********************
+	 */
+
 	public float getAverageCountTurns() {
 		return averageCountTurns;
 	}
@@ -40,7 +91,7 @@ public class StressResult {
 		this.avHydro = avHydro;
 	}
 
-	public int getAvVoice() {
+	public float getAvVoice() {
 		return avVoice;
 	}
 

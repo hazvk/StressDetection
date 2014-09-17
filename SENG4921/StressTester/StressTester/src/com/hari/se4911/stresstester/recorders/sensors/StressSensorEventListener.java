@@ -1,11 +1,11 @@
 package com.hari.se4911.stresstester.recorders.sensors;
 
-import com.hari.se4911.stresstester.recorders.AcceleratorRecorder;
-import com.hari.se4911.stresstester.recorders.HygrometerRecorder;
-
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+
+import com.hari.se4911.stresstester.recorders.AcceleratorRecorder;
+import com.hari.se4911.stresstester.recorders.HygrometerRecorder;
 
 public class StressSensorEventListener implements SensorEventListener {
 	

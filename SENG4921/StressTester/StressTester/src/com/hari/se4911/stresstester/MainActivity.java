@@ -1,7 +1,6 @@
 package com.hari.se4911.stresstester;
 
 import java.io.FileNotFoundException;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -22,6 +21,7 @@ import com.hari.se4911.stresstester.recorders.VoiceRecorder;
 import com.hari.se4911.stresstester.recorders.sensors.StressSensorEventListener;
 import com.hari.se4911.stresstester.results.DataAnalyzer;
 import com.hari.se4911.stresstester.results.DataParser;
+import com.hari.se4911.stresstester.results.NoResultsException;
 import com.hari.se4911.stresstester.results.StressResult;
 
 public class MainActivity extends ActionBarActivity {
@@ -137,14 +137,23 @@ public class MainActivity extends ActionBarActivity {
 			@Override
 			public void run() {
 				stopSensors();
-				returnResults();
-				analyze();
+				
+				String temp;
+				try {
+					analyzeResults();
+					temp = stringifyRes();
+				} catch (NoResultsException e) {
+					e.printStackTrace();
+					temp = "Error in generated results.";
+				}
+				
+				final String toPrint = new String(temp);
 				
 				runOnUiThread(new Runnable() {
 					
 					@Override
 					public void run() {
-						res.setText(stringifyRes());
+						res.setText(toPrint);
 					}
 				});
 				
@@ -166,15 +175,11 @@ public class MainActivity extends ActionBarActivity {
 			va.stopRecord();
 		}
 	}
-	
-	protected void returnResults() {
+
+	private void analyzeResults() throws NoResultsException {
 		currRes = new StressResult(aa.getResults(), ha.getResults(), 
 				va.getResults());
-	}
-
-	private void analyze() {
-		// TODO Auto-generated method stub
-		
+		currRes.analyze();
 	}
 	
 	public String stringifyRes() {

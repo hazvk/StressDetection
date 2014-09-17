@@ -23,9 +23,7 @@ public class DataParser {
 		File f = new File(dataFile);
         Scanner lineScanner = new Scanner(f);
         
-        boolean setStart  = false;
         //Get all tokens and store them in some data structure
-        
         while (lineScanner.hasNextLine()) 
         {
         	String line = lineScanner.nextLine();
