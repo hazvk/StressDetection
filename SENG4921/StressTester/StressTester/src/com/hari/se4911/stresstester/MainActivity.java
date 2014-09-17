@@ -1,5 +1,7 @@
 package com.hari.se4911.stresstester;
 
+import java.io.FileNotFoundException;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -18,8 +20,9 @@ import com.hari.se4911.stresstester.recorders.AcceleratorRecorder;
 import com.hari.se4911.stresstester.recorders.HygrometerRecorder;
 import com.hari.se4911.stresstester.recorders.VoiceRecorder;
 import com.hari.se4911.stresstester.recorders.sensors.StressSensorEventListener;
+import com.hari.se4911.stresstester.results.DataAnalyzer;
 import com.hari.se4911.stresstester.results.DataParser;
-import com.hari.se4911.stresstester.results.StressResults;
+import com.hari.se4911.stresstester.results.StressResult;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -29,8 +32,8 @@ public class MainActivity extends ActionBarActivity {
 	HygrometerRecorder ha;
 	VoiceRecorder va;
 	
-	StressResults dataRes;
-	StressResults currRes;
+	DataAnalyzer dataRes;
+	StressResult currRes;
 	
 	private long ONE_MINUTE = 60*1000;
 	
@@ -40,11 +43,37 @@ public class MainActivity extends ActionBarActivity {
 		setContentView(R.layout.activity_main);
 		initialize();
 	}
+	
+
+	@Override
+	protected void onResume() {
+	    // Register a listener for the sensor.
+		super.onResume();
+		if (mSensorListener != null && mSensorManager != null) {
+		    mSensorManager.registerListener(mSensorListener, 
+		    		mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+		    		SensorManager.SENSOR_DELAY_NORMAL);
+		    mSensorManager.registerListener(mSensorListener, 
+		    		mSensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY),
+		    		SensorManager.SENSOR_DELAY_NORMAL);
+		    va.startRecord();
+		}
+	}
+	
+	@Override
+	protected void onPause() {
+		// Be sure to unregister the sensor when the activity pauses.
+		super.onPause();
+		stopSensors();
+		
+	}
+	
+	/*
+	 * ********************STRESS IMPLEMENTATION*********************
+	 */
 
 	private void initialize() {
-		loadData(null);
-		//TODO: put something instead of null
-		
+		loadData("data.csv");
 	}
 
 	private void initSensors() {
@@ -56,9 +85,11 @@ public class MainActivity extends ActionBarActivity {
 		mSensorListener = new StressSensorEventListener(aa, ha);
 
 		mSensorManager.registerListener(mSensorListener, 
-				mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+				mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+				SensorManager.SENSOR_DELAY_NORMAL);
 		mSensorManager.registerListener(mSensorListener, 
-				mSensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY), SensorManager.SENSOR_DELAY_NORMAL);
+				mSensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY),
+				SensorManager.SENSOR_DELAY_NORMAL);
 		
 		va = new VoiceRecorder();
 		va.startRecord();
@@ -66,8 +97,14 @@ public class MainActivity extends ActionBarActivity {
 
 	private void loadData(String data) {
 		DataParser dp = new DataParser(data);
-		dp.parse();
-		dataRes = dp.getResults();
+		try {
+			dp.parse();
+			dataRes = new DataAnalyzer(dp.getResults());
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			dataRes = new DataAnalyzer();
+		}
+		dataRes.analyze();
 	}
 
 	@Override
@@ -107,15 +144,18 @@ public class MainActivity extends ActionBarActivity {
 					
 					@Override
 					public void run() {
-						res.setText("done run");
+						res.setText(stringifyRes());
 					}
 				});
+				
+				//TODO: CHECK IF ACTUALLY STRESSED?
+				
 			}
 		};
 		
-		tim.schedule(tm,ONE_MINUTE);
+		tim.schedule(tm, ONE_MINUTE);
 		
-		res.setText("done");
+		res.setText("Detecting stress...");
 		return true;
 		
 	}
@@ -128,34 +168,27 @@ public class MainActivity extends ActionBarActivity {
 	}
 	
 	protected void returnResults() {
-		//TODO: get results from each object
-		currRes = new StressResults(aa.getResults(), ha.getResults(), va.getResults());
-		
+		currRes = new StressResult(aa.getResults(), ha.getResults(), 
+				va.getResults());
 	}
 
 	private void analyze() {
 		// TODO Auto-generated method stub
 		
 	}
-
-	@Override
-	protected void onResume() {
-	    // Register a listener for the sensor.
-		super.onResume();
-		if (mSensorListener != null && mSensorManager != null) {
-		    mSensorManager.registerListener(mSensorListener, 
-		    		mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
-		    mSensorManager.registerListener(mSensorListener, 
-		    		mSensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY), SensorManager.SENSOR_DELAY_NORMAL);
-		    va.startRecord();
-		}
-	}
 	
-	@Override
-	protected void onPause() {
-		// Be sure to unregister the sensor when the activity pauses.
-		super.onPause();
-		stopSensors();
+	public String stringifyRes() {
+		StringBuilder sbr = new StringBuilder();
+		sbr.append("Accelerometer count turns: ").append(currRes.getAverageCountTurns()).append("\n");
+		sbr.append("Hygrometer average: ").append(currRes.getAvHydro()).append("\n");
+		sbr.append("Average amplitude of voice: ").append(currRes.getAvVoice()).append("\n");
+		sbr.append("\n");
+		String stressAns;
+		if (currRes.isStressed()) stressAns = "YES!";
+		else stressAns = "No.";
+		sbr.append("Are you stressed? ").append(stressAns);
+		
+		return sbr.toString();
 		
 	}
 	  
