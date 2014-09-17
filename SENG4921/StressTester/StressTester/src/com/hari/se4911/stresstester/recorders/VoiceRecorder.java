@@ -82,6 +82,8 @@ public class VoiceRecorder extends Activity {
 					
 					Log.v("VoiceRecording", "Voice Recording is: " + String.valueOf(amplitudeReading));
 					
+					storedVals.add((short)amplitudeReading);
+					
 				}
 			}
 		};
@@ -99,7 +101,7 @@ public class VoiceRecorder extends Activity {
     	Log.v("VoiceRecording", this.printResults());
     }
 
-	private String printResults() {
+	public String printResults() {
 		String ans = "";
 		for (Short sh: storedVals) {
 			ans += sh + " ";
@@ -109,6 +111,12 @@ public class VoiceRecorder extends Activity {
 
 	public ArrayList<Short> getResults() {
 		return storedVals;
+	}
+	
+	public boolean isRecording() {
+		if (ar.getRecordingState() == AudioRecord.RECORDSTATE_STOPPED)
+			return false;
+		else return true;
 	}
     
 }

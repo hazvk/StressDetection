@@ -43,7 +43,7 @@ public class StressResult {
 	private void analyzeAccel() throws NoResultsException {
 		if (accelRes == null) throw new NoResultsException();
 		else {
-			// TODO Auto-generated method stub			
+			averageCountTurns = accelRes.get("x").size();			
 		}
 		
 	}
@@ -51,22 +51,28 @@ public class StressResult {
 	private void analyzeHydro() throws NoResultsException {
 		if (hydroRes == null) throw new NoResultsException();
 		else {
-			// TODO Auto-generated method stub			
+			avHydro = hydroRes.size();		
 		}
 		
 	}
 
 	private void analyzeVoice() throws NoResultsException {
 		if (voiceRes == null) throw new NoResultsException();
+		else if (voiceRes.equals(new ArrayList<Short>())) avVoice = -1;
 		else {
 			int countShout = 0;
+			int sum = 0;
 			int total = voiceRes.size();
 			for (Short v: voiceRes) {
 				if (Math.abs(v) >= 100) {
 					countShout++;
 				}
+				sum += Math.abs(v);
 			}
-			avVoice = (float) (countShout/total);
+			float fractionShouting = (float) (countShout/total);
+			//TODO: use this
+			
+			avVoice = (float) (sum/total);
 		}
 		
 	}

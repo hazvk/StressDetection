@@ -35,7 +35,7 @@ public class MainActivity extends ActionBarActivity {
 	DataAnalyzer dataRes;
 	StressResult currRes;
 	
-	private long ONE_MINUTE = 60*1000;
+	private long ONE_MINUTE = 5*1000;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +56,12 @@ public class MainActivity extends ActionBarActivity {
 		    mSensorManager.registerListener(mSensorListener, 
 		    		mSensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY),
 		    		SensorManager.SENSOR_DELAY_NORMAL);
-		    va.startRecord();
+		}
+		
+		if (va != null) {
+			if (!va.isRecording()) {
+				va.startRecord();	
+			}
 		}
 	}
 	
@@ -66,6 +71,25 @@ public class MainActivity extends ActionBarActivity {
 		super.onPause();
 		stopSensors();
 		
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 	
 	/*
@@ -107,25 +131,6 @@ public class MainActivity extends ActionBarActivity {
 		dataRes.analyze();
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
-	
 	public boolean testStress(View v) {
 		initSensors();
 		
@@ -170,9 +175,15 @@ public class MainActivity extends ActionBarActivity {
 	}
 	
 	protected void stopSensors() {
-		if (mSensorListener != null && mSensorManager != null) {
+		if (mSensorListener != null && mSensorManager != null && 
+				va != null) {
 			mSensorManager.unregisterListener(mSensorListener);
-			va.stopRecord();
+		}
+		
+		if (va != null) {
+			if (va.isRecording()) {
+				va.stopRecord();	
+			}
 		}
 	}
 
@@ -184,7 +195,7 @@ public class MainActivity extends ActionBarActivity {
 	
 	public String stringifyRes() {
 		StringBuilder sbr = new StringBuilder();
-		sbr.append("Accelerometer count turns: ").append(currRes.getAverageCountTurns()).append("\n");
+		sbr.append("Accelerometer turn count: ").append(currRes.getAverageCountTurns()).append("\n");
 		sbr.append("Hygrometer average: ").append(currRes.getAvHydro()).append("\n");
 		sbr.append("Average amplitude of voice: ").append(currRes.getAvVoice()).append("\n");
 		sbr.append("\n");
