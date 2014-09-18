@@ -195,13 +195,21 @@ public class MainActivity extends ActionBarActivity {
 	
 	public String stringifyRes() {
 		StringBuilder sbr = new StringBuilder();
-		sbr.append("Accelerometer turn count: ").append(currRes.getAverageCountTurns()).append("\n");
-		sbr.append("Hygrometer average: ").append(currRes.getAvHydro()).append("\n");
-		sbr.append("Average amplitude of voice: ").append(currRes.getAvVoice()).append("\n");
+		sbr.append("Accelerometer turn count: ")
+			.append(currRes.getAvgCountTurns())
+			.append("\n");
+		sbr.append("Hygrometer average: ")
+			.append(currRes.getAvgHydro())
+			.append("\n");
+		sbr.append("Average amplitude of voice: ")
+			.append(currRes.getAvgVoice())
+			.append("\n");
 		sbr.append("\n");
+		
 		String stressAns;
 		if (currRes.isStressed()) stressAns = "YES!";
 		else stressAns = "No.";
+		
 		sbr.append("Are you stressed? ").append(stressAns);
 		
 		return sbr.toString();

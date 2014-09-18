@@ -14,7 +14,7 @@ import android.util.Log;
 public class AcceleratorRecorder implements SensorEventListener {
     StringBuilder builder;
 
-    float[] history;;
+    float[] history;
     String[] direction = {"0","0","0"};
     
     Map<String, ArrayList<Float>> maxChanges = new HashMap<String, ArrayList<Float>>();
@@ -134,8 +134,8 @@ public class AcceleratorRecorder implements SensorEventListener {
         // nothing to do here
     }
 
-	public Map<String, ArrayList<Float>> getResults() {
+	public int[] getResults() {
 		Log.v("Accelerometer", builder.toString());
-		return maxChanges;
+		return paceCount;
 	}
 }

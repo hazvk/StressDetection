@@ -1,16 +1,15 @@
 package com.hari.se4911.stresstester.results;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 public class StressResult {
 
-	private float averageCountTurns;
-	private float avHydro;
-	private float avVoice;
+	private float[] avgCountTurns;
+	private float avgHydro;
+	private float[] avgVoice;
 	private boolean isStressed;
 	
-	private Map<String, ArrayList<Float>> accelRes;
+	private int[] accelRes;
 	private ArrayList<float[]> hydroRes;
 	private ArrayList<Short> voiceRes;
 	
@@ -18,7 +17,7 @@ public class StressResult {
 		initResults();
 	}
 
-	public StressResult(Map<String, ArrayList<Float>> accelRes,
+	public StressResult(int[] accelRes,
 			ArrayList<float[]> hydroRes, ArrayList<Short> voiceRes) {
 		this.accelRes = accelRes;
 		this.hydroRes = hydroRes;
@@ -27,9 +26,9 @@ public class StressResult {
 	}
 	
 	private void initResults() {
-		averageCountTurns = 0;
-		avHydro = 0;
-		avVoice = 0;
+		avgCountTurns = new float[2];
+		avgHydro = 0;
+		avgVoice = new float[2];
 		isStressed = false;
 	}
 	
@@ -37,13 +36,37 @@ public class StressResult {
 		analyzeAccel();
 		analyzeHydro();
 		analyzeVoice();
+		
+		boolean isStressedAccel = isStressedAccel();
+		boolean isStressedHydro = isStressedHydro();
+		boolean isStressedVoice = isStressedVoice();
+		
+		boolean test1 = isStressedAccel && (isStressedHydro || isStressedVoice);
+		boolean test2 = isStressedVoice && (isStressedHydro || isStressedAccel);
+		boolean test3 = isStressedVoice && isStressedHydro && isStressedAccel;
+		
+		this.setStressed(test1 || test2 || test3);
 	}
 
 	
+	private boolean isStressedAccel() {
+		return avgCountTurns[0] > 2 && avgCountTurns[1] > 2;
+	}
+
+	private boolean isStressedHydro() {
+		return avgHydro > 60;
+	}
+
+	private boolean isStressedVoice() {
+		return avgVoice[0] > 0.75 && avgVoice[1] >= 75;
+	}
+
 	private void analyzeAccel() throws NoResultsException {
-		if (accelRes == null) throw new NoResultsException();
+		int[] toComp = {0, 0, 0};
+		if (accelRes == toComp) throw new NoResultsException();
 		else {
-			averageCountTurns = accelRes.get("x").size();			
+			avgCountTurns[0] = (float)(accelRes[0]/accelRes[2]);
+			avgCountTurns[1] = (float)(accelRes[1]/accelRes[2]);
 		}
 		
 	}
@@ -51,14 +74,22 @@ public class StressResult {
 	private void analyzeHydro() throws NoResultsException {
 		if (hydroRes == null) throw new NoResultsException();
 		else {
-			avHydro = hydroRes.size();		
+			int sum = 0;
+			int total = hydroRes.size();
+			for (float[] h: hydroRes) {
+				sum += h[0];
+			}
+			avgHydro = (float) (sum/total);	
 		}
 		
 	}
 
 	private void analyzeVoice() throws NoResultsException {
 		if (voiceRes == null) throw new NoResultsException();
-		else if (voiceRes.equals(new ArrayList<Short>())) avVoice = -1;
+		else if (voiceRes.equals(new ArrayList<Short>())) {
+			avgVoice[0] = -1;
+			avgVoice[1] = -1;
+		}
 		else {
 			int countShout = 0;
 			int sum = 0;
@@ -69,10 +100,8 @@ public class StressResult {
 				}
 				sum += Math.abs(v);
 			}
-			float fractionShouting = (float) (countShout/total);
-			//TODO: use this
-			
-			avVoice = (float) (sum/total);
+			avgVoice[0] = (float) (countShout/total);
+			avgVoice[1] = (float) (sum/total);
 		}
 		
 	}
@@ -81,28 +110,28 @@ public class StressResult {
 	 * *********************GETTERS AND SETTERS**********************
 	 */
 
-	public float getAverageCountTurns() {
-		return averageCountTurns;
+	public float[] getAvgCountTurns() {
+		return avgCountTurns;
 	}
 
-	public void setAverageCountTurns(int averageCountTurns) {
-		this.averageCountTurns = averageCountTurns;
+	public void setAvgCountTurns(float[] avgCountTurns) {
+		this.avgCountTurns = avgCountTurns;
 	}
 
-	public float getAvHydro() {
-		return avHydro;
+	public float getAvgHydro() {
+		return avgHydro;
 	}
 
-	public void setAvHydro(float avHydro) {
-		this.avHydro = avHydro;
+	public void setAvgHydro(float avgHydro) {
+		this.avgHydro = avgHydro;
 	}
 
-	public float getAvVoice() {
-		return avVoice;
+	public float[] getAvgVoice() {
+		return avgVoice;
 	}
 
-	public void setAvVoice(int avVoice) {
-		this.avVoice = avVoice;
+	public void setAvgVoice(float[] avgVoice) {
+		this.avgVoice = avgVoice;
 	}
 
 	public boolean isStressed() {
@@ -117,18 +146,24 @@ public class StressResult {
 	 * ***********************FOR DataAnalyzer***********************
 	 */
 	
-	public void setAccel(String next) {
-		setAverageCountTurns(Integer.parseInt(next));
+	public void setAccel(String xAvg, String yAvg) throws NumberFormatException {
+		float[] avgs = new float[2];
+		avgs[0] = Float.parseFloat(xAvg);
+		avgs[1] = Float.parseFloat(yAvg);
+		setAvgCountTurns(avgs);
 		
 	}
 
-	public void setHydro(String next) {
-		setAvHydro(Float.parseFloat(next));
+	public void setHydro(String next) throws NumberFormatException {
+		setAvgHydro(Float.parseFloat(next));
 		
 	}
 
-	public void setVoice(String next) {
-		setAvVoice(Integer.parseInt(next));
+	public void setVoice(String fracShout, String avgAmp) throws NumberFormatException {
+		float[] data = new float[2];
+		data[0] = Float.parseFloat(fracShout);
+		data[1] = Float.parseFloat(avgAmp);
+		setAvgVoice(data);
 		
 	}
 

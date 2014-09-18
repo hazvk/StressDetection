@@ -18,7 +18,7 @@ public class DataParser {
 		return results;
 	}
 
-	public void parse() throws FileNotFoundException {
+	public void parse() throws FileNotFoundException, NumberFormatException {
 		//Get scanner instance
 		File f = new File(dataFile);
         Scanner lineScanner = new Scanner(f);
@@ -31,12 +31,22 @@ public class DataParser {
         	scanner.useDelimiter(",");
         	
         	StressResult sr = new StressResult();
+        	String xAvg = "";
+        	String yAvg = ""; 
         	if(scanner.hasNext())
-        		sr.setAccel(scanner.next());
+        		xAvg = scanner.next();
+        	if(scanner.hasNext())
+        		yAvg = scanner.next();
+        	sr.setAccel(xAvg, yAvg);
         	if(scanner.hasNext())
         		sr.setHydro(scanner.next());
+        	String fracShout = "";
+        	String avgAmp = "";
         	if(scanner.hasNext())
-        		sr.setVoice(scanner.next());
+        		fracShout = scanner.next();
+        	if(scanner.hasNext())
+        		avgAmp = scanner.next();
+        	sr.setVoice(fracShout, avgAmp);
     		if(scanner.hasNext())
         		sr.setStressed(Boolean.parseBoolean(scanner.next()));
 
