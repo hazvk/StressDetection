@@ -196,13 +196,15 @@ public class MainActivity extends ActionBarActivity {
 	public String stringifyRes() {
 		StringBuilder sbr = new StringBuilder();
 		sbr.append("Accelerometer turn count: ")
-			.append(currRes.getAvgCountTurns())
+			.append("\t" + currRes.getAvgCountTurns()[0] + " " +
+					currRes.getAvgCountTurns()[1])
 			.append("\n");
 		sbr.append("Hygrometer average: ")
 			.append(currRes.getAvgHydro())
 			.append("\n");
 		sbr.append("Average amplitude of voice: ")
-			.append(currRes.getAvgVoice())
+			.append("\t" + currRes.getAvgVoice()[0] + " " +
+					currRes.getAvgVoice()[1])
 			.append("\n");
 		sbr.append("\n");
 		

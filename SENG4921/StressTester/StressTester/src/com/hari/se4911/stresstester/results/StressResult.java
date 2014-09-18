@@ -18,7 +18,8 @@ public class StressResult {
 	}
 
 	public StressResult(int[] accelRes,
-			ArrayList<float[]> hydroRes, ArrayList<Short> voiceRes) {
+			ArrayList<float[]> hydroRes, 
+			ArrayList<Short> voiceRes) {
 		this.accelRes = accelRes;
 		this.hydroRes = hydroRes;
 		this.voiceRes = voiceRes;
@@ -39,13 +40,16 @@ public class StressResult {
 		
 		boolean isStressedAccel = isStressedAccel();
 		boolean isStressedHydro = isStressedHydro();
-		boolean isStressedVoice = isStressedVoice();
+		boolean[] isStressedVoice = isStressedVoice();
 		
-		boolean test1 = isStressedAccel && (isStressedHydro || isStressedVoice);
-		boolean test2 = isStressedVoice && (isStressedHydro || isStressedAccel);
-		boolean test3 = isStressedVoice && isStressedHydro && isStressedAccel;
+		boolean test1 = isStressedAccel && (isStressedHydro 
+				|| isStressedVoice[1]);
+		boolean test2 = isStressedVoice[0] && (isStressedHydro 
+				|| isStressedAccel);
+		boolean test3 = isStressedVoice[1];
+		boolean test4 = isStressedHydro && isStressedVoice[0] && isStressedAccel;
 		
-		this.setStressed(test1 || test2 || test3);
+		this.setStressed(test1 || test2 || test3 || test4);
 	}
 
 	
@@ -57,8 +61,11 @@ public class StressResult {
 		return avgHydro > 60;
 	}
 
-	private boolean isStressedVoice() {
-		return avgVoice[0] > 0.75 && avgVoice[1] >= 75;
+	private boolean[] isStressedVoice() {
+		boolean[] ans = new boolean[2];
+		ans[0] = avgVoice[0] > 0.75 && avgVoice[1] >= 75;
+		ans[1] = avgVoice[0] > 0.75 && avgVoice[1] >= 120;
+		return ans;
 	}
 
 	private void analyzeAccel() throws NoResultsException {
@@ -95,7 +102,7 @@ public class StressResult {
 			int sum = 0;
 			int total = voiceRes.size();
 			for (Short v: voiceRes) {
-				if (Math.abs(v) >= 100) {
+				if (Math.abs(v) >= 75) {
 					countShout++;
 				}
 				sum += Math.abs(v);
@@ -146,7 +153,8 @@ public class StressResult {
 	 * ***********************FOR DataAnalyzer***********************
 	 */
 	
-	public void setAccel(String xAvg, String yAvg) throws NumberFormatException {
+	public void setAccel(String xAvg, String yAvg) 
+			throws NumberFormatException {
 		float[] avgs = new float[2];
 		avgs[0] = Float.parseFloat(xAvg);
 		avgs[1] = Float.parseFloat(yAvg);
@@ -159,7 +167,8 @@ public class StressResult {
 		
 	}
 
-	public void setVoice(String fracShout, String avgAmp) throws NumberFormatException {
+	public void setVoice(String fracShout, String avgAmp) 
+			throws NumberFormatException {
 		float[] data = new float[2];
 		data[0] = Float.parseFloat(fracShout);
 		data[1] = Float.parseFloat(avgAmp);
