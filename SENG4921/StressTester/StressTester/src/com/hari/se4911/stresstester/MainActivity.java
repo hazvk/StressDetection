@@ -1,19 +1,34 @@
 package com.hari.se4911.stresstester;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.hardware.Sensor;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.hari.se4911.stresstester.recorders.AcceleratorRecorder;
 import com.hari.se4911.stresstester.recorders.HygrometerRecorder;
@@ -36,6 +51,9 @@ public class MainActivity extends ActionBarActivity {
 	StressResult currRes;
 	
 	private long ONE_MINUTE = 5*1000;
+	
+	private String permFolderPath = Environment.getExternalStorageDirectory() + File.separator;
+	private String folderPath = "//android_asset/";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -85,10 +103,11 @@ public class MainActivity extends ActionBarActivity {
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
+		
+		/*int id = item.getItemId();
 		if (id == R.id.action_settings) {
 			return true;
-		}
+		}*/
 		return super.onOptionsItemSelected(item);
 	}
 	
@@ -97,7 +116,12 @@ public class MainActivity extends ActionBarActivity {
 	 */
 
 	private void initialize() {
-		loadData("data.csv");
+		try {
+			loadData("data.csv");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void initSensors() {
@@ -119,9 +143,21 @@ public class MainActivity extends ActionBarActivity {
 		va.startRecord();
 	}
 
-	private void loadData(String data) {
-		DataParser dp = new DataParser(data);
+	private void loadData(String data) throws IOException {
 		try {
+			File f = new File(permFolderPath + data);
+			if (!f.exists()) {
+				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(f, true)));
+				BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open("data.csv")));
+
+				String line;
+				while ((line = br.readLine()) != null) {
+					out.println(line);
+				}
+				
+			    out.close();
+			}
+			DataParser dp = new DataParser(f);
 			dp.parse();
 			dataRes = new DataAnalyzer(dp.getResults());
 		} catch (FileNotFoundException e) {
@@ -131,7 +167,7 @@ public class MainActivity extends ActionBarActivity {
 		dataRes.analyze();
 	}
 
-	public boolean testStress(View v) {
+	public void testStress(View v) {
 		initSensors();
 		
 		final TextView res = (TextView) findViewById(R.id.results);
@@ -159,21 +195,70 @@ public class MainActivity extends ActionBarActivity {
 					@Override
 					public void run() {
 						res.setText(toPrint);
+						askIfCorrect();
 					}
 				});
 				
-				//TODO: CHECK IF ACTUALLY STRESSED?
 				
 			}
+
 		};
 		
 		tim.schedule(tm, ONE_MINUTE);
 		
 		res.setText("Detecting stress...");
-		return true;
 		
 	}
 	
+	protected void askIfCorrect() {
+		String stressAns;
+		if (currRes.isStressed()) stressAns = "YES!";
+		else stressAns = "No.";
+		
+		new AlertDialog.Builder(MainActivity.this)
+		.setTitle("Done")
+		.setMessage("Are you stressed? "+ stressAns + "\nAre you really though?")
+		.setNegativeButton("No", isNotStressed())
+		.setPositiveButton("Yes", isStressed())
+		.show();
+		
+	}
+
+
+	private OnClickListener isStressed() {
+		return new OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				currRes.setY("1");
+				writeNewDataToFile();
+			}
+		};
+	}
+
+
+	private OnClickListener isNotStressed() {
+		return new OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				currRes.setY("-1");
+				writeNewDataToFile();
+			}
+		};
+	}
+	
+	protected void writeNewDataToFile() {
+		try {
+			currRes.writeToFile(permFolderPath + "data.csv");
+		} catch (IOException e) {
+			e.printStackTrace();
+			Toast.makeText(getBaseContext(), "Did not write out!",
+					Toast.LENGTH_LONG).show();
+		}
+	}
+
+
 	protected void stopSensors() {
 		if (mSensorListener != null && mSensorManager != null && 
 				va != null) {

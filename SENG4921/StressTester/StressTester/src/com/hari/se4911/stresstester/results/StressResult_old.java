@@ -72,8 +72,8 @@ public class StressResult_old {
 		int[] toComp = {0, 0, 0};
 		if (accelRes == toComp) throw new NoResultsException();
 		else {
-			avgCountTurns[0] = (float)(accelRes[0]/accelRes[2]);
-			avgCountTurns[1] = (float)(accelRes[1]/accelRes[2]);
+			avgCountTurns[0] = accelRes[0]/accelRes[2];
+			avgCountTurns[1] = accelRes[1]/accelRes[2];
 		}
 		
 	}
@@ -86,7 +86,7 @@ public class StressResult_old {
 			for (float[] h: hydroRes) {
 				sum += h[0];
 			}
-			avgHydro = (float) (sum/total);	
+			avgHydro = sum/total;	
 		}
 		
 	}
@@ -107,8 +107,8 @@ public class StressResult_old {
 				}
 				sum += Math.abs(v);
 			}
-			avgVoice[0] = (float) (countShout/total);
-			avgVoice[1] = (float) (sum/total);
+			avgVoice[0] = countShout/total;
+			avgVoice[1] = sum/total;
 		}
 		
 	}

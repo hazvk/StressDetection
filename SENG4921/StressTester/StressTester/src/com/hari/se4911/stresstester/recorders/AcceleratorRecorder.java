@@ -36,7 +36,8 @@ public class AcceleratorRecorder implements SensorEventListener {
         Log.v("Accelerometer", "START");
     }
 
-    public void onSensorChanged(SensorEvent event) {
+    @Override
+	public void onSensorChanged(SensorEvent event) {
 
         float xChange = history[0] - event.values[0];
         float yChange = history[1] - event.values[1];

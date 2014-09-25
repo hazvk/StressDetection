@@ -2,16 +2,18 @@ package com.hari.se4911.stresstester.results;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class DataParser {
 	
-	private String dataFile;
+	private File dataFile;
 	private List<StressResult> results;
-
-	public DataParser(String dataFile) {
-		this.dataFile = dataFile;
+	
+	public DataParser(File f) {
+		this.dataFile = f;
+		results = new ArrayList<StressResult>();
 	}
 
 	public List<StressResult> getResults() {
@@ -20,8 +22,7 @@ public class DataParser {
 
 	public void parse() throws FileNotFoundException, NumberFormatException {
 		//Get scanner instance
-		File f = new File(dataFile);
-        Scanner lineScanner = new Scanner(f);
+        Scanner lineScanner = new Scanner(dataFile);
         
         //Get all tokens and store them in some data structure
         while (lineScanner.hasNextLine()) 
@@ -31,28 +32,34 @@ public class DataParser {
         	scanner.useDelimiter(",");
         	
         	StressResult sr = new StressResult();
-        	String xAvg = "";
-        	String yAvg = ""; 
         	
-        	if(scanner.hasNext())
-        		xAvg = scanner.next();
-        	if(scanner.hasNext())
-        		yAvg = scanner.next();
-        	sr.setAccel(xAvg, yAvg);
-        	if(scanner.hasNext())
-        		sr.setHydro(scanner.next());
-        	String fracShout = "";
-        	String avgAmp = "";
-        	if(scanner.hasNext())
-        		fracShout = scanner.next();
-        	if(scanner.hasNext())
-        		avgAmp = scanner.next();
-        	sr.setVoice(fracShout, avgAmp);
-    		if(scanner.hasNext())
-        		sr.setY(scanner.next());
+        	try {
+        		String xAvg = "";
+            	String yAvg = ""; 
+            	if(scanner.hasNext())
+            		xAvg = scanner.next();
+            	if(scanner.hasNext())
+            		yAvg = scanner.next();
+            	sr.setAccel(xAvg, yAvg);
+            	if(scanner.hasNext())
+            		sr.setHydro(scanner.next());
+            	String fracShout = "";
+            	String avgAmp = "";
+            	if(scanner.hasNext())
+            		fracShout = scanner.next();
+            	if(scanner.hasNext())
+            		avgAmp = scanner.next();
+            	sr.setVoice(fracShout, avgAmp);
+        		if(scanner.hasNext())
+            		sr.setY(scanner.next());
 
-    		results.add(sr);
-    		scanner.close();
+        		results.add(sr);
+        		scanner.close();
+        	} catch (NumberFormatException ne) {
+        		ne.printStackTrace();
+        		continue;
+        	}
+        	
         }
         lineScanner.close();
 

@@ -1,5 +1,9 @@
 package com.hari.se4911.stresstester.results;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class StressResult {
@@ -39,8 +43,8 @@ public class StressResult {
 		int[] toComp = {0, 0, 0};
 		if (accelRes == toComp) throw new NoResultsException();
 		else {
-			avgCountTurns[0] = (float)(accelRes[0]/accelRes[2]);
-			avgCountTurns[1] = (float)(accelRes[1]/accelRes[2]);
+			avgCountTurns[0] = accelRes[0]/accelRes[2];
+			avgCountTurns[1] = accelRes[1]/accelRes[2];
 		}
 		
 	}
@@ -53,7 +57,7 @@ public class StressResult {
 			for (float[] h: hydroRes) {
 				sum += h[0];
 			}
-			avgHydro = (float) (sum/total);	
+			avgHydro = sum/total;	
 		}
 		
 	}
@@ -74,8 +78,8 @@ public class StressResult {
 				}
 				sum += Math.abs(v);
 			}
-			avgVoice[0] = (float) (countShout/total);
-			avgVoice[1] = (float) (sum/total);
+			avgVoice[0] = countShout/total;
+			avgVoice[1] = sum/total;
 		}
 		
 	}
@@ -106,6 +110,11 @@ public class StressResult {
 
 	public void setAvgVoice(float[] avgVoice) {
 		this.avgVoice = avgVoice;
+	}
+	
+
+	private float getY() {
+		return y;
 	}
 
 	public boolean isStressed() {
@@ -140,7 +149,22 @@ public class StressResult {
 	}
 
 	public void setY(String next) {
-		this.y = Integer.parseInt(next);
+		this.y = Float.parseFloat(next);
+		
+	}
+
+	public void writeToFile(String f) throws IOException, NullPointerException {
+		StringBuilder ans = new StringBuilder();
+		ans.append(this.getAvgCountTurns()[0]).append(",");
+		ans.append(this.getAvgCountTurns()[1]).append(",");
+		ans.append(this.getAvgHydro()).append(",");
+		ans.append(this.getAvgVoice()[0]).append(",");
+		ans.append(this.getAvgVoice()[1]).append(",");
+		ans.append(this.getY());
+		
+		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(f, true)));
+	    out.println(ans.toString());
+	    out.close();
 		
 	}
 
