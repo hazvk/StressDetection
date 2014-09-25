@@ -33,6 +33,7 @@ public class DataParser {
         	StressResult sr = new StressResult();
         	String xAvg = "";
         	String yAvg = ""; 
+        	
         	if(scanner.hasNext())
         		xAvg = scanner.next();
         	if(scanner.hasNext())
@@ -48,7 +49,7 @@ public class DataParser {
         		avgAmp = scanner.next();
         	sr.setVoice(fracShout, avgAmp);
     		if(scanner.hasNext())
-        		sr.setStressed(Boolean.parseBoolean(scanner.next()));
+        		sr.setY(scanner.next());
 
     		results.add(sr);
     		scanner.close();

@@ -2,40 +2,73 @@ package com.hari.se4911.stresstester.results;
 
 import java.util.ArrayList;
 
-public class StressResult {
+public class StressResult_old {
 
 	private float[] avgCountTurns;
 	private float avgHydro;
 	private float[] avgVoice;
-	private float y;
+	private boolean isStressed;
 	
-	public StressResult() {
+	private int[] accelRes;
+	private ArrayList<float[]> hydroRes;
+	private ArrayList<Short> voiceRes;
+	
+	public StressResult_old() {
 		initResults();
 	}
 
-	public StressResult(int[] accelRes,
+	public StressResult_old(int[] accelRes,
 			ArrayList<float[]> hydroRes, 
-			ArrayList<Short> voiceRes) throws NoResultsException {
+			ArrayList<Short> voiceRes) {
+		this.accelRes = accelRes;
+		this.hydroRes = hydroRes;
+		this.voiceRes = voiceRes;
 		initResults();
-		analyzeAccel(accelRes);
-		analyzeHydro(hydroRes);
-		analyzeVoice(voiceRes);
-		y = 0;
 	}
 	
 	private void initResults() {
 		avgCountTurns = new float[2];
 		avgHydro = 0;
 		avgVoice = new float[2];
-		y = 0;
+		isStressed = false;
 	}
 	
-	public void analyze(DataAnalyzer da) throws NoResultsException {
-		this.y = da.substitute(this);
+	public void analyze() throws NoResultsException {
+		analyzeAccel();
+		analyzeHydro();
+		analyzeVoice();
+		
+		boolean isStressedAccel = isStressedAccel();
+		boolean isStressedHydro = isStressedHydro();
+		boolean[] isStressedVoice = isStressedVoice();
+		
+		boolean test1 = isStressedAccel && (isStressedHydro 
+				|| isStressedVoice[1]);
+		boolean test2 = isStressedVoice[0] && (isStressedHydro 
+				|| isStressedAccel);
+		boolean test3 = isStressedVoice[1];
+		boolean test4 = isStressedHydro && isStressedVoice[0] && isStressedAccel;
+		
+		this.setStressed(test1 || test2 || test3 || test4);
 	}
 
 	
-	private void analyzeAccel(int[] accelRes) throws NoResultsException {
+	private boolean isStressedAccel() {
+		return avgCountTurns[0] > 2 && avgCountTurns[1] > 2;
+	}
+
+	private boolean isStressedHydro() {
+		return avgHydro > 60;
+	}
+
+	private boolean[] isStressedVoice() {
+		boolean[] ans = new boolean[2];
+		ans[0] = avgVoice[0] > 0.75 && avgVoice[1] >= 75;
+		ans[1] = avgVoice[0] > 0.75 && avgVoice[1] >= 120;
+		return ans;
+	}
+
+	private void analyzeAccel() throws NoResultsException {
 		int[] toComp = {0, 0, 0};
 		if (accelRes == toComp) throw new NoResultsException();
 		else {
@@ -45,7 +78,7 @@ public class StressResult {
 		
 	}
 
-	private void analyzeHydro(ArrayList<float[]> hydroRes) throws NoResultsException {
+	private void analyzeHydro() throws NoResultsException {
 		if (hydroRes == null) throw new NoResultsException();
 		else {
 			int sum = 0;
@@ -58,7 +91,7 @@ public class StressResult {
 		
 	}
 
-	private void analyzeVoice(ArrayList<Short> voiceRes) throws NoResultsException {
+	private void analyzeVoice() throws NoResultsException {
 		if (voiceRes == null) throw new NoResultsException();
 		else if (voiceRes.equals(new ArrayList<Short>())) {
 			avgVoice[0] = -1;
@@ -109,9 +142,13 @@ public class StressResult {
 	}
 
 	public boolean isStressed() {
-		return y >= 0;
+		return isStressed;
 	}
 
+	public void setStressed(boolean isStressed) {
+		this.isStressed = isStressed;
+	}
+	
 	/*
 	 * ***********************FOR DataAnalyzer***********************
 	 */
@@ -136,11 +173,6 @@ public class StressResult {
 		data[0] = Float.parseFloat(fracShout);
 		data[1] = Float.parseFloat(avgAmp);
 		setAvgVoice(data);
-		
-	}
-
-	public void setY(String next) {
-		this.y = Integer.parseInt(next);
 		
 	}
 

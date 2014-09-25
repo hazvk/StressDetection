@@ -190,7 +190,7 @@ public class MainActivity extends ActionBarActivity {
 	private void analyzeResults() throws NoResultsException {
 		currRes = new StressResult(aa.getResults(), ha.getResults(), 
 				va.getResults());
-		currRes.analyze();
+		currRes.analyze(dataRes);
 	}
 	
 	public String stringifyRes() {
