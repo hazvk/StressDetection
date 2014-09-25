@@ -14,10 +14,10 @@ public class DataAnalyzer {
 	private Map<String, Float> weightVector;
 	private float a;
 	private float b;
+	private Map<String, Float> midVector;
 	
 	public DataAnalyzer(List<StressResult> results) {
 		this.results = results;
-		weightVector = new HashMap<>();
 		this.analyze();
 	}
 
@@ -25,7 +25,7 @@ public class DataAnalyzer {
 		results = new ArrayList<StressResult>();
 		a = 0;
 		b = 0;
-		weightVector = new HashMap<>();
+		
 	}
 	
 	public void analyze() {
@@ -39,6 +39,8 @@ public class DataAnalyzer {
 	}
 	
 	private void idPoints() {
+		v1 = null;
+		v2 = null;
 		Map<String, List<StressResult>> dividePoints = categorize();
 		findShortest(dividePoints.get("pos"), dividePoints.get("neg"));
 	}
@@ -59,12 +61,39 @@ public class DataAnalyzer {
 	}
 	
 	private void findShortest(List<StressResult> pos, List<StressResult> neg) {
-		// TODO Auto-generated method stub
-		// implement algorithm here
+		// TODO better algorithm
+		double minDistance = 0;
+		for (StressResult p: pos) {
+			for (StressResult n: neg) {
+				if (v1 == null || v2 == null) {
+					v1 = p;
+					v2 = n;
+					minDistance = findDist(v1, v2);
+				} else {
+					double dist = findDist(p,n);
+					if (dist < minDistance) {
+						v1 = p;
+						v2 = n;
+						minDistance = dist;
+					}
+				}
+			}
+		}
+	}
+
+	private double findDist(StressResult p, StressResult n) {
+		double params = 0;
+		params += Math.pow((v1.getAvgCountTurns()[0] - v2.getAvgCountTurns()[0]),2);
+		params += Math.pow((v1.getAvgCountTurns()[1] - v2.getAvgCountTurns()[1]),2);
+		params += Math.pow((v1.getAvgHydro() - v2.getAvgHydro()),2);
+		params += Math.pow((v1.getAvgVoice()[0] - v2.getAvgVoice()[0]),2);
+		params += Math.pow((v1.getAvgVoice()[1] - v2.getAvgVoice()[1]),2);
 		
+		return Math.sqrt(params);
 	}
 
 	private void setWeightVector() {
+		weightVector = new HashMap<>();
 		weightVector.put("accel0", v1.getAvgCountTurns()[0] - v2.getAvgCountTurns()[0]);
 		weightVector.put("accel1", v1.getAvgCountTurns()[1] - v2.getAvgCountTurns()[1]);
 		weightVector.put("hydro", v1.getAvgHydro() - v2.getAvgHydro());
@@ -73,8 +102,13 @@ public class DataAnalyzer {
 	}
 
 	private void findMidpoint() {
-		// TODO Auto-generated method stub
-		// DO WE NEED THIS?
+		// DO NOT NEED UNLESS USING OTHER IMPLEMENTATION
+		midVector = new HashMap<String, Float>();
+		midVector.put("accel0", (v1.getAvgCountTurns()[0] + v2.getAvgCountTurns()[0])/2);
+		midVector.put("accel1", (v1.getAvgCountTurns()[1] + v2.getAvgCountTurns()[1])/2);
+		midVector.put("hydro", (v1.getAvgHydro() + v2.getAvgHydro())/2);
+		midVector.put("voice0", (v1.getAvgVoice()[0]+ v2.getAvgVoice()[0])/2);
+		midVector.put("voice1", (v1.getAvgVoice()[1] + v2.getAvgVoice()[1])/2);
 		
 	}
 
