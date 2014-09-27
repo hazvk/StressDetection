@@ -167,5 +167,39 @@ public class StressResult {
 	    out.close();
 		
 	}
+	
+	/*
+	 * THRESHOLD STRESS
+	 */
+	public boolean isThresholdStressed() throws NoResultsException {
+		boolean isStressedAccel = isStressedAccel();
+		boolean isStressedHydro = isStressedHydro();
+		boolean[] isStressedVoice = isStressedVoice();
+		
+		boolean test1 = isStressedAccel && (isStressedHydro 
+				|| isStressedVoice[1]);
+		boolean test2 = isStressedVoice[0] && (isStressedHydro 
+				|| isStressedAccel);
+		boolean test3 = isStressedVoice[1];
+		boolean test4 = isStressedHydro && isStressedVoice[0] && isStressedAccel;
+		
+		return (test1 || test2 || test3 || test4);
+	}
+
+	
+	private boolean isStressedAccel() {
+		return avgCountTurns[0] > 2 && avgCountTurns[1] > 2;
+	}
+
+	private boolean isStressedHydro() {
+		return avgHydro > 60;
+	}
+
+	private boolean[] isStressedVoice() {
+		boolean[] ans = new boolean[2];
+		ans[0] = avgVoice[0] > 0.75 && avgVoice[1] >= 75;
+		ans[1] = avgVoice[0] > 0.75 && avgVoice[1] >= 120;
+		return ans;
+	}
 
 }

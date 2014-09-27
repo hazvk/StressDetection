@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class DataAnalyzer {
 
-	List<StressResult> results;
+	List<StressResult> res;
 	private StressResult v1;
 	private StressResult v2;
 	
@@ -17,35 +17,50 @@ public class DataAnalyzer {
 	private Map<String, Float> midVector;
 	
 	public DataAnalyzer(List<StressResult> results) {
-		this.results = results;
+		this.res = results;
 		this.analyze();
 	}
 
 	public DataAnalyzer() {
-		results = new ArrayList<StressResult>();
+		res = new ArrayList<StressResult>();
 		a = 0;
 		b = 0;
 		
 	}
 	
 	public void analyze() {
-		idPoints();
-		setWeightVector();
-		findMidpoint();
+		List<StressResult> results = excludeOutliers();
+		idPoints(results);
+		setWeightVector(results);
+		findMidpoint(results);
 		float[] exp1 = getExp(v1);
 		float[] exp2 = getExp(v2);
 		findEqn(exp1, exp2);
 		
 	}
 	
-	private void idPoints() {
+	private List<StressResult> excludeOutliers() {
+		List<StressResult> results = new ArrayList<StressResult>(res);
+		for (StressResult s: results) {
+			try {
+				if (!s.isThresholdStressed()) {
+					results.remove(s);
+				}
+			} catch (NoResultsException e) {
+				res.remove(s);
+			}
+		}
+		return results;
+	}
+
+	private void idPoints(List<StressResult> results) {
 		v1 = null;
 		v2 = null;
-		Map<String, List<StressResult>> dividePoints = categorize();
+		Map<String, List<StressResult>> dividePoints = categorize(results);
 		findShortest(dividePoints.get("pos"), dividePoints.get("neg"));
 	}
 	
-	private Map<String, List<StressResult>> categorize() {
+	private Map<String, List<StressResult>> categorize(List<StressResult> results) {
 		List<StressResult> pos = new ArrayList<>();
 		List<StressResult> neg = new ArrayList<>();
 		for (StressResult s: results) {
@@ -92,7 +107,7 @@ public class DataAnalyzer {
 		return Math.sqrt(params);
 	}
 
-	private void setWeightVector() {
+	private void setWeightVector(List<StressResult> results) {
 		weightVector = new HashMap<>();
 		weightVector.put("accel0", v1.getAvgCountTurns()[0] - v2.getAvgCountTurns()[0]);
 		weightVector.put("accel1", v1.getAvgCountTurns()[1] - v2.getAvgCountTurns()[1]);
@@ -101,7 +116,7 @@ public class DataAnalyzer {
 		weightVector.put("voice1", v1.getAvgVoice()[1] - v2.getAvgVoice()[1]);
 	}
 
-	private void findMidpoint() {
+	private void findMidpoint(List<StressResult> results) {
 		// DO NOT NEED UNLESS USING OTHER IMPLEMENTATION
 		midVector = new HashMap<String, Float>();
 		midVector.put("accel0", (v1.getAvgCountTurns()[0] + v2.getAvgCountTurns()[0])/2);
@@ -119,7 +134,7 @@ public class DataAnalyzer {
 	}
 
 	public void add(StressResult sr) {
-		results.add(sr);
+		res.add(sr);
 		this.analyze();
 	}
 	
