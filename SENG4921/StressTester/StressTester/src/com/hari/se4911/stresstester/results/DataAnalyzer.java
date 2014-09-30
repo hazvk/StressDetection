@@ -43,7 +43,8 @@ public class DataAnalyzer {
 		List<StressResult> results = new ArrayList<StressResult>(res);
 		for (StressResult s: results) {
 			try {
-				if (!s.isThresholdStressed()) {
+				if (!s.isThresholdStressed() &&
+						s.isStressed()) {
 					results.remove(s);
 				}
 			} catch (NoResultsException e) {

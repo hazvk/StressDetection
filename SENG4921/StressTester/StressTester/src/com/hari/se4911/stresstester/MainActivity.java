@@ -3,12 +3,9 @@ package com.hari.se4911.stresstester;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Timer;
@@ -53,7 +50,7 @@ public class MainActivity extends ActionBarActivity {
 	private long ONE_MINUTE = 5*1000;
 	
 	private String permFolderPath = Environment.getExternalStorageDirectory() + File.separator;
-	private String folderPath = "//android_asset/";
+	//private String folderPath = "//android_asset/";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
