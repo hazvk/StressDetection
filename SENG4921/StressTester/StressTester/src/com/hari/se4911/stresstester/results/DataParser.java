@@ -20,7 +20,7 @@ public class DataParser {
 		return results;
 	}
 
-	public void parse() throws FileNotFoundException, NumberFormatException {
+	public void parse() throws FileNotFoundException {
 		//Get scanner instance
         Scanner lineScanner = new Scanner(dataFile);
         

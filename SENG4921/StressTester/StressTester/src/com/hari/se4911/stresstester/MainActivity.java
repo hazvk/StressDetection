@@ -3,6 +3,7 @@ package com.hari.se4911.stresstester;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -45,13 +46,14 @@ public class MainActivity extends ActionBarActivity {
 	HygrometerRecorder ha;
 	VoiceRecorder va;
 	
+	File f;
 	DataAnalyzer dataRes;
 	StressResult currRes;
-	
-	private long ONE_MINUTE = 5*1000;
-	
-	private String permFolderPath = Environment.getExternalStorageDirectory() + 
+	private String permFolderPath = 
+			Environment.getExternalStorageDirectory() + 
 			File.separator + "StressDetection" + File.separator;
+		
+	private long ONE_MINUTE = 5*1000;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -122,6 +124,26 @@ public class MainActivity extends ActionBarActivity {
 					+ " Try restarting or re-installing the application.",
 					Toast.LENGTH_LONG).show();
 			dataRes = new DataAnalyzer();
+		} catch (NumberFormatException ne) {
+			ne.printStackTrace();
+			Toast.makeText(getBaseContext(), "Invalid number data. "
+					+ "Removing file.",
+					Toast.LENGTH_LONG).show();
+			Calendar now = Calendar.getInstance();
+			StringBuilder sbr = new StringBuilder();
+			sbr.append(now.get(Calendar.YEAR));
+			sbr.append(now.get(Calendar.MONTH));
+			sbr.append(now.get(Calendar.DATE));
+			sbr.append("T");
+			sbr.append(now.get(Calendar.HOUR)).append("-");
+			sbr.append(now.get(Calendar.MINUTE)).append("-");
+			sbr.append(now.get(Calendar.SECOND)).append("-");
+			sbr.append(now.get(Calendar.MILLISECOND));
+			sbr.append(".csv");
+			
+			File temp = new File(permFolderPath + sbr.toString());
+			f.renameTo(temp);
+			initialize();
 		}
 	}
 
@@ -144,32 +166,48 @@ public class MainActivity extends ActionBarActivity {
 		va.startRecord();
 	}
 
-	private void loadData(String data) throws NumberFormatException, IOException {
-		File f = new File(permFolderPath + data);
+	private void loadData(String data) throws IOException {
+		
+		f = new File(permFolderPath + data);
 		if (!f.exists()) {
-			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(f, true)));
-			BufferedReader br = new BufferedReader(
-					new InputStreamReader(getAssets().open("data.csv")));
-
-			String line;
-			while ((line = br.readLine()) != null) {
-				out.println(line);
-			}
-			
-			Toast.makeText(getBaseContext(), 
-					"File does not exist. Creating a "
-					+ "new one...",
-					Toast.LENGTH_LONG);
-			
-		    out.close();
+			createNewFile();
 		}
 		
-		DataParser dp = new DataParser(f);
-		dp.parse();
-		dataRes = new DataAnalyzer(dp.getResults());
-
-		dataRes.analyze();
+		try {
+			DataParser dp = new DataParser(f);
+			dp.parse();
+			dataRes = new DataAnalyzer(dp.getResults());
+			dataRes.analyze();
+		} catch (FileNotFoundException fe) {
+			fe.printStackTrace();
+			Toast.makeText(getBaseContext(), "Could not open data file! Make sure "
+					+ "file is not in use. Try restarting or re-installing the "
+					+ "application if problem persists.",
+					Toast.LENGTH_LONG).show();
+			createNewFile();
+		}
+		
 	}
+
+	private void createNewFile() throws IOException {
+		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(f, true)));
+		BufferedReader br = new BufferedReader(
+				new InputStreamReader(getAssets().open("data.csv")));
+
+		String line;
+		while ((line = br.readLine()) != null) {
+			out.println(line);
+		}
+		
+		Toast.makeText(getBaseContext(), 
+				"File does not exist. Creating a "
+				+ "new one...",
+				Toast.LENGTH_LONG);
+		
+	    out.close();
+		
+	}
+
 
 	public void testStress(View v) {
 		initSensors();
@@ -291,8 +329,8 @@ public class MainActivity extends ActionBarActivity {
 	public String stringifyRes(long analysisTime) {
 		StringBuilder sbr = new StringBuilder();
 		sbr.append("Accelerometer turn count: ")
-			.append("\t" + currRes.getAvgCountTurns()[0] + " " +
-					currRes.getAvgCountTurns()[1])
+			.append("\t" + currRes.getAvgCountTurns()[0] + 
+					" " + currRes.getAvgCountTurns()[1])
 			.append("\n");
 		sbr.append("Hygrometer average: ")
 			.append(currRes.getAvgHydro())
@@ -307,8 +345,11 @@ public class MainActivity extends ActionBarActivity {
 		if (currRes.isStressed()) stressAns = "YES!";
 		else stressAns = "No.";
 		
-		sbr.append("Are you stressed? ").append(stressAns).append("\n\n");
-		sbr.append("Time to analyse: ").append(analysisTime);
+		sbr.append("Are you stressed? ")
+			.append(stressAns)
+			.append("\n").append("\n");
+		sbr.append("Time to analyse: ")
+			.append(analysisTime);
 		
 		return sbr.toString();
 		

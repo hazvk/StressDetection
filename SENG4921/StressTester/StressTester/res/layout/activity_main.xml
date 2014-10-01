@@ -12,7 +12,7 @@
         android:id="@+id/test_stress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_alignTop="@+id/textView2"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="70dp"
         android:onClick="testStress"
@@ -27,6 +27,25 @@
         android:layout_alignParentRight="true"
         android:layout_below="@+id/test_stress"
         android:layout_marginTop="30dp"
-        android:text="No data yet!" />
+        android:text="Not used yet!" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="StressTester"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="18dp"
+        android:text="Tap start and repeat the phrase 'The quick brown fox jumped over the lazy dog' as you speak into the phone, whilst holding it to your ear."
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
 </RelativeLayout>
