@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.util.Log;
+
 public class DataAnalyzer {
 
 	List<StressResult> res;
@@ -131,7 +133,21 @@ public class DataAnalyzer {
 	private void findEqn(float[] exp1, float[] exp2) {
 		a = (exp1[1]-exp2[1])/(exp1[0]-exp2[0]);
 		b = exp1[1] - a*exp1[0];
-		
+		StringBuilder logRes = new StringBuilder();
+		logRes.append("SUMMARY - Boundary determined by:\n");
+		logRes.append("Weight Vector: [ ");
+		int i = 0;
+		for (String s: weightVector.keySet()) {
+			logRes.append(weightVector.get(s) * a);
+			i++;
+			if (i != weightVector.keySet().size()) {
+				logRes.append(",");
+			}
+			logRes.append(" ");
+		}
+		logRes.append("]\n");
+		logRes.append("b = " + b);
+		Log.v("DataAnalyzer", logRes.toString());
 	}
 
 	public void add(StressResult sr) {
@@ -164,7 +180,7 @@ public class DataAnalyzer {
 		sum += weightVector.get("voice0")*v.getAvgVoice()[0];
 		sum += weightVector.get("voice1")*v.getAvgVoice()[1];
 		
-		return a*sum + b; 
+		return a*sum + b;
 	}
 	
 

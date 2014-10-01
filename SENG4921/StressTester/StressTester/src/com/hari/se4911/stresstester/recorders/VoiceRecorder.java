@@ -10,12 +10,12 @@ import android.util.Log;
 
 public class VoiceRecorder extends Activity {
 
-	ArrayList<Short> storedVals;
+	ArrayList<Float> storedVals;
 	private int SAMPLE_RATE = 12000;
 	private int SAMPLE_DELAY = 75*5; 
 	private int minSize;
-	AudioRecord ar;
-	Thread th;
+	private AudioRecord ar;
+	private Thread th;
 	//private boolean isLoud = false;
 	
     public VoiceRecorder() {
@@ -27,7 +27,7 @@ public class VoiceRecorder extends Activity {
     			SAMPLE_RATE,
     			AudioFormat.CHANNEL_IN_MONO, 
     			AudioFormat.ENCODING_PCM_16BIT,minSize);
-    	storedVals = new ArrayList<Short>();
+    	storedVals = new ArrayList<Float>();
     	
     }
     
@@ -57,7 +57,7 @@ public class VoiceRecorder extends Activity {
 						sum += buffer[i];
 					}
 					
-					int amplitudeReading;
+					float amplitudeReading;
 					try {
 						amplitudeReading = sum/totalRead;
 					} catch (ArithmeticException ae) {
@@ -65,24 +65,9 @@ public class VoiceRecorder extends Activity {
 						amplitudeReading = 0;
 					}
 					 
-					
-					/*
-					 * analyser logic
-					 * 
-					 * 	if (Math.abs(amplitudeReading) >= 100 && !isLoud) {
-					 * 		isLoud = true;
-					 *	}
-					 *	
-					 *	if (Math.abs(amplitudeReading) < 100 && isLoud) {
-					 *		isLoud = false;
-					 *	}
-					 *
-					 */
-						
-					
 					Log.v("VoiceRecording", "Voice Recording is: " + String.valueOf(amplitudeReading));
 					
-					storedVals.add((short)amplitudeReading);
+					storedVals.add(amplitudeReading);
 					
 				}
 			}
@@ -103,13 +88,13 @@ public class VoiceRecorder extends Activity {
 
 	public String printResults() {
 		String ans = "";
-		for (Short sh: storedVals) {
+		for (Float sh: storedVals) {
 			ans += sh + " ";
 		}
 		return ans;
 	}
 
-	public ArrayList<Short> getResults() {
+	public ArrayList<Float> getResults() {
 		return storedVals;
 	}
 	
@@ -118,5 +103,5 @@ public class VoiceRecorder extends Activity {
 			return false;
 		else return true;
 	}
-    
+
 }

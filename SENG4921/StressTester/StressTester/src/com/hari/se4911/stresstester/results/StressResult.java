@@ -19,11 +19,11 @@ public class StressResult {
 
 	public StressResult(int[] accelRes,
 			ArrayList<float[]> hydroRes, 
-			ArrayList<Short> voiceRes) throws NoResultsException {
+			ArrayList<Float> arrayList) throws NoResultsException {
 		initResults();
 		analyzeAccel(accelRes);
 		analyzeHydro(hydroRes);
-		analyzeVoice(voiceRes);
+		analyzeVoice(arrayList);
 		y = 0;
 	}
 	
@@ -62,17 +62,15 @@ public class StressResult {
 		
 	}
 
-	private void analyzeVoice(ArrayList<Short> voiceRes) throws NoResultsException {
-		if (voiceRes == null) throw new NoResultsException();
-		else if (voiceRes.equals(new ArrayList<Short>())) {
-			avgVoice[0] = -1;
-			avgVoice[1] = -1;
-		}
+	private void analyzeVoice(ArrayList<Float> arrayList) throws NoResultsException {
+		if (arrayList == null) throw new NoResultsException();
+		else if (arrayList.equals(new ArrayList<Float>()))
+			throw new NoResultsException();
 		else {
 			int countShout = 0;
 			int sum = 0;
-			int total = voiceRes.size();
-			for (Short v: voiceRes) {
+			int total = arrayList.size();
+			for (Float v: arrayList) {
 				if (Math.abs(v) >= 75) {
 					countShout++;
 				}
@@ -150,7 +148,6 @@ public class StressResult {
 
 	public void setY(String next) {
 		this.y = Float.parseFloat(next);
-		
 	}
 
 	public void writeToFile(String f) throws IOException, NullPointerException {

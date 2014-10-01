@@ -3,7 +3,6 @@ package com.hari.se4911.stresstester;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -49,8 +48,8 @@ public class MainActivity extends ActionBarActivity {
 	
 	private long ONE_MINUTE = 5*1000;
 	
-	private String permFolderPath = Environment.getExternalStorageDirectory() + File.separator;
-	//private String folderPath = "//android_asset/";
+	private String permFolderPath = Environment.getExternalStorageDirectory() + 
+			File.separator + "StressDetection" + File.separator;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -116,8 +115,11 @@ public class MainActivity extends ActionBarActivity {
 		try {
 			loadData("data.csv");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			Toast.makeText(getBaseContext(), "Could not open basic file!"
+					+ " Try restarting or re-installing the application.",
+					Toast.LENGTH_LONG).show();
+			dataRes = new DataAnalyzer();
 		}
 	}
 
@@ -140,27 +142,30 @@ public class MainActivity extends ActionBarActivity {
 		va.startRecord();
 	}
 
-	private void loadData(String data) throws IOException {
-		try {
-			File f = new File(permFolderPath + data);
-			if (!f.exists()) {
-				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(f, true)));
-				BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open("data.csv")));
+	private void loadData(String data) throws NumberFormatException, IOException {
+		File f = new File(permFolderPath + data);
+		if (!f.exists()) {
+			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(f, true)));
+			BufferedReader br = new BufferedReader(
+					new InputStreamReader(getAssets().open("data.csv")));
 
-				String line;
-				while ((line = br.readLine()) != null) {
-					out.println(line);
-				}
-				
-			    out.close();
+			String line;
+			while ((line = br.readLine()) != null) {
+				out.println(line);
 			}
-			DataParser dp = new DataParser(f);
-			dp.parse();
-			dataRes = new DataAnalyzer(dp.getResults());
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			dataRes = new DataAnalyzer();
+			
+			Toast.makeText(getBaseContext(), 
+					"File does not exist. Creating a "
+					+ "new one...",
+					Toast.LENGTH_LONG);
+			
+		    out.close();
 		}
+		
+		DataParser dp = new DataParser(f);
+		dp.parse();
+		dataRes = new DataAnalyzer(dp.getResults());
+
 		dataRes.analyze();
 	}
 
@@ -195,10 +200,7 @@ public class MainActivity extends ActionBarActivity {
 						askIfCorrect();
 					}
 				});
-				
-				
 			}
-
 		};
 		
 		tim.schedule(tm, ONE_MINUTE);
@@ -250,7 +252,9 @@ public class MainActivity extends ActionBarActivity {
 			currRes.writeToFile(permFolderPath + "data.csv");
 		} catch (IOException e) {
 			e.printStackTrace();
-			Toast.makeText(getBaseContext(), "Did not write out!",
+			Toast.makeText(getBaseContext(), "Did not write out! If problems "
+					+ "persist, make sure file is"
+					+ "not in use and restart the app.",
 					Toast.LENGTH_LONG).show();
 		}
 	}
