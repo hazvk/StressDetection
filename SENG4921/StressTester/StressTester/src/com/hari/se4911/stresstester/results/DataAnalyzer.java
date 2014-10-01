@@ -106,8 +106,12 @@ public class DataAnalyzer {
 		params += Math.pow((v1.getAvgHydro() - v2.getAvgHydro()),2);
 		params += Math.pow((v1.getAvgVoice()[0] - v2.getAvgVoice()[0]),2);
 		params += Math.pow((v1.getAvgVoice()[1] - v2.getAvgVoice()[1]),2);
+
+		//NOT NECESSARY - COULD GET AWAY WITH:
+		//double ans = params;
+		double ans = Math.sqrt(params);
 		
-		return Math.sqrt(params);
+		return ans;
 	}
 
 	private void setWeightVector(List<StressResult> results) {

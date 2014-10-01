@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -20,6 +21,7 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -183,8 +185,8 @@ public class MainActivity extends ActionBarActivity {
 				
 				String temp;
 				try {
-					analyzeResults();
-					temp = stringifyRes();
+					long analysisTime = analyzeResults();
+					temp = stringifyRes(analysisTime);
 				} catch (NoResultsException e) {
 					e.printStackTrace();
 					temp = "Error in generated results.";
@@ -273,13 +275,20 @@ public class MainActivity extends ActionBarActivity {
 		}
 	}
 
-	private void analyzeResults() throws NoResultsException {
+	private long analyzeResults() throws NoResultsException {
+		Calendar start = Calendar.getInstance();
 		currRes = new StressResult(aa.getResults(), ha.getResults(), 
 				va.getResults());
 		currRes.analyze(dataRes);
+		Calendar end = Calendar.getInstance();
+		
+		long ans = end.getTimeInMillis() - start.getTimeInMillis(); 
+		
+		Log.v("MainActivity", "Analysis time: " + ans);
+		return ans;
 	}
 	
-	public String stringifyRes() {
+	public String stringifyRes(long analysisTime) {
 		StringBuilder sbr = new StringBuilder();
 		sbr.append("Accelerometer turn count: ")
 			.append("\t" + currRes.getAvgCountTurns()[0] + " " +
@@ -298,7 +307,8 @@ public class MainActivity extends ActionBarActivity {
 		if (currRes.isStressed()) stressAns = "YES!";
 		else stressAns = "No.";
 		
-		sbr.append("Are you stressed? ").append(stressAns);
+		sbr.append("Are you stressed? ").append(stressAns).append("\n\n");
+		sbr.append("Time to analyse: ").append(analysisTime);
 		
 		return sbr.toString();
 		
