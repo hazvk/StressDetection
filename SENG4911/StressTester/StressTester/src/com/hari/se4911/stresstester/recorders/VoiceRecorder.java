@@ -79,12 +79,12 @@ public class VoiceRecorder extends Activity {
 	}
 
 	public void stopRecord() {
-    	th.interrupt();
-    	th = null;
-    	ar.stop();
-    	Log.v("VoiceRecording", "STOP");
-    	Log.v("VoiceRecording", this.printResults());
-    }
+ 	   	th.interrupt();
+	    	th = null;
+	    	ar.stop();
+	    	Log.v("VoiceRecording", "STOP");
+	    	Log.v("VoiceRecording", this.printResults());
+    	}
 
 	public String printResults() {
 		String ans = "";
