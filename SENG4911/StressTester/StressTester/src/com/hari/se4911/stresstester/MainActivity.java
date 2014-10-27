@@ -53,7 +53,7 @@ public class MainActivity extends ActionBarActivity {
 			Environment.getExternalStorageDirectory() + 
 			File.separator + "StressDetection" + File.separator;
 		
-	private long ONE_MINUTE = 60*1000;
+	private long ONE_MINUTE = 5*1000;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

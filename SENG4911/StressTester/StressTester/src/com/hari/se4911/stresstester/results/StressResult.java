@@ -12,6 +12,7 @@ public class StressResult {
 	private float avgHydro;
 	private float[] avgVoice;
 	private float y;
+	private float calculatedY;
 	
 	public StressResult() {
 		initResults();
@@ -25,6 +26,7 @@ public class StressResult {
 		analyzeHydro(hydroRes);
 		analyzeVoice(arrayList);
 		y = 0;
+		calculatedY = 0;
 	}
 	
 	private void initResults() {
@@ -32,10 +34,12 @@ public class StressResult {
 		avgHydro = 0;
 		avgVoice = new float[2];
 		y = 0;
+		calculatedY = 0;
 	}
 	
 	public void analyze(DataAnalyzer da) throws NoResultsException {
 		this.y = da.substitute(this);
+		this.calculatedY = this.y;
 	}
 
 	
@@ -114,6 +118,10 @@ public class StressResult {
 	private float getY() {
 		return y;
 	}
+	
+	private float getCalculatedY() {
+		return calculatedY;
+	}
 
 	public boolean isStressed() {
 		return y >= 0;
@@ -149,6 +157,10 @@ public class StressResult {
 	public void setY(String next) {
 		this.y = Float.parseFloat(next);
 	}
+	
+	public void setCalculatedY(String next) {
+		this.calculatedY = Float.parseFloat(next);
+	}
 
 	public void writeToFile(String f) throws IOException, NullPointerException {
 		StringBuilder ans = new StringBuilder();
@@ -157,7 +169,8 @@ public class StressResult {
 		ans.append(this.getAvgHydro()).append(",");
 		ans.append(this.getAvgVoice()[0]).append(",");
 		ans.append(this.getAvgVoice()[1]).append(",");
-		ans.append(this.getY());
+		ans.append(this.getY()).append(",");
+		ans.append(this.getCalculatedY());
 		
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(f, true)));
 	    out.println(ans.toString());

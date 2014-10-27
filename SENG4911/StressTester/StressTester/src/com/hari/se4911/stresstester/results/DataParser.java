@@ -52,6 +52,8 @@ public class DataParser {
             	sr.setVoice(fracShout, avgAmp);
         		if(scanner.hasNext())
             		sr.setY(scanner.next());
+        		if(scanner.hasNext())
+            		sr.setCalculatedY(scanner.next());
 
         		results.add(sr);
         		scanner.close();
